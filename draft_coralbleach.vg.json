@@ -1,0 +1,149 @@
+{
+  "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+  "data": { "url": "global_bleaching_environmental.csv" },
+
+  "title": "Coral bleaching at monitored reef sites (1997-2020)",
+
+  "transform": [
+    {
+      "calculate": "isDate(datum.Date) ? toDate(datum.Date) : toDate(datum.Date_Year + '-' + (datum.Date_Month || 1) + '-' + (datum.Date_Day || 1))",
+      "as": "date"
+    },
+    {
+      "calculate": "isValid(datum.Percent_Bleaching) ? datum.Percent_Bleaching : null",
+      "as": "pct_bleach"
+    }
+  ],
+
+  "vconcat": [
+    {
+      "hconcat": [
+        {
+          "width": 600,
+          "height": 300,
+          "projection": { "type": "equalEarth", "rotate": [-150, 0, 0] },
+          "layer": [
+            {
+              "data": {
+                "url": "https://raw.githubusercontent.com/FIT3179/Vega-Lite/main/2_symbol_map/js/ne_110m_admin_0_countries.topojson",
+                "format": { "type": "topojson", "feature": "ne_110m_admin_0_countries" }
+              },
+              "mark": { "type": "geoshape", "fill": "lightgray", "stroke": "white" }
+            },
+            {
+              "data": {
+                "url": "https://raw.githubusercontent.com/FIT3179/Vega-Lite/main/7_others/oceans.topojson",
+                "format": { "type": "topojson", "feature": "oceans" }
+              },
+              "mark": { "type": "geoshape", "fill": "skyblue" }
+            },
+            {
+              "data": {
+                "url": "https://raw.githubusercontent.com/FIT3179/Vega-Lite/main/2_symbol_map/js/WorldMapWithGraticules.topojson",
+                "format": { "type": "topojson", "feature": "ne_110m_graticules_30" }
+              },
+              "mark": { "type": "geoshape", "fill": null, "stroke": "lightgray" }
+            },
+            {
+              "transform": [ { "filter": { "param": "time_brush" } } ],
+              "encoding": {
+                "longitude": { "field": "Longitude_Degrees", "type": "quantitative" },
+                "latitude": { "field": "Latitude_Degrees", "type": "quantitative" },
+                "color": {
+                  "field": "pct_bleach",
+                  "type": "quantitative",
+                  "title": "Percent bleaching",
+                  "scale": {
+                    "type": "threshold",
+                    "domain": [1, 10, 20, 50, 80],
+                    "range": [
+                      "#f3e79b",
+                      "#f8a07e",
+                      "#eb7f86",
+                      "#ce6693",
+                      "#a059a0",
+                      "#5c53a5"
+                    ]
+                  }
+                },
+                "tooltip": [
+                  { "field": "date", "type": "temporal", "title": "Date" },
+                  { "field": "Site_Name", "type": "nominal", "title": "Site" },
+                  { "field": "Country_Name", "type": "nominal", "title": "Country" },
+                  { "field": "pct_bleach", "type": "quantitative", "title": "% Bleaching" },
+                  { "field": "Temperature_Mean", "type": "quantitative", "title": "Temp (°C)" }
+                ]
+              },
+              "layer": [
+                { "mark": { "type": "circle", "opacity": 0.7, "size": 20 } },
+                {
+                  "transform": [
+                    { "window": [ { "op": "rank", "as": "ranking" } ], "sort": [ { "field": "pct_bleach", "order": "descending" } ] },
+                    { "filter": "datum.ranking == 1" },
+                    { "calculate": "'Worst bleaching in selected range: ' + format(datum.pct_bleach,'~r') + '%'", "as": "label" }
+                  ],
+                  "layer": [
+                    {
+                      "mark": { "type": "point", "size": 220, "shape": "M0,.5L.6,.8L.5,.1L1,-.3L.3,-.4L0,-1L-.3,-.4L-1,-.3L-.5,.1L-.6,.8L0,.5Z" },
+                      "encoding": { "color": { "field": "pct_bleach", "type": "quantitative", "legend": null } }
+                    },
+                    { "mark": { "type": "text", "align": "right", "dx": -8, "dy": -8, "baseline": "middle", "fontStyle": "italic" },
+                      "encoding": { "text": { "field": "label" } } }
+                  ]
+                }
+              ],
+              "resolve": { "scale": { "color": "independent" } }
+            }
+          ]
+        },
+
+        {
+          "width": 475,
+          "height": 280,
+          "transform": [
+            { "bin": { "step": 20, "extent": [0, 100] }, "field": "pct_bleach", "as": "Bleach_Bin" }
+          ],
+          "mark": "area",
+          "encoding": {
+            "x": {
+              "field": "date",
+              "timeUnit": "yearmonth",
+              "scale": { "domain": { "param": "time_brush" } },
+              "axis": { "title": "", "tickCount": 5, "grid": false }
+            },
+            "y": { "aggregate": "count", "title": "Count of Sites" },
+            "color": {
+              "field": "Bleach_Bin",
+              "type": "ordinal",
+              "title": "% Bleaching (binned)",
+              "scale": {"domain": [1, 10, 20, 50, 80],
+                    "range": [
+                      "#f3e79b",
+                      "#f8a07e",
+                      "#eb7f86",
+                      "#ce6693",
+                      "#a059a0",
+                      "#5c53a5"
+                    ]},
+              "legend": null
+            }
+          }
+        }
+      ]
+    },
+
+    {
+      "width": 1200,
+      "height": 60,
+      "mark": { "type": "line", "color": "#fdcc8a" },
+      "title": "Use this line chart to filter the data by time",
+      "params": [ { "name": "time_brush", "select": { "type": "interval", "encodings": ["x"] } } ],
+      "encoding": {
+        "x": { "field": "date", "timeUnit": "yearmonth", "axis": { "title": "", "format": "%Y" } },
+        "y": { "aggregate": "count", "axis": { "tickCount": 3, "grid": false }, "title": "Count of Sites" }
+      }
+    }
+  ],
+
+  "config": { "title": { "font": "sans-serif", "fontSize": 16 } }
+}
