@@ -1,0 +1,160 @@
+{
+  "$schema": "https://vega.github.io/schema/vega-lite/v6.json",
+  "description": "CDF of extreme bleaching events vs SST anomaly (cumulative count)",
+  "data": {"url": "temp_v_bleach.csv"},
+  "params": [
+    {
+      "name": "bleachThresh",
+      "value": 50,
+      "bind": {
+        "input": "range",
+        "min": 50,
+        "max": 100,
+        "step": 5,
+        "name": "Extreme bleaching ≥ (%) "
+      }
+    }
+  ],
+  "transform": [
+    {"calculate": "toNumber(datum.Percent_Bleaching)", "as": "bleach_pct"},
+    {"calculate": "toNumber(datum.SSTA)", "as": "ssta"},
+    {"filter": "isValid(datum.bleach_pct) && isValid(datum.ssta)"},
+    {"filter": "datum.bleach_pct >= bleachThresh"},
+    {"bin": {"step": 0.2}, "field": "ssta", "as": ["bin_start", "bin_end"]},
+    {"aggregate": [{"op": "count", "as": "n"}], "groupby": ["bin_start", "bin_end"]},
+    {"sort": [{"field": "bin_end", "order": "ascending"}]},
+    {"window": [{"op": "sum", "field": "n", "as": "cum_n"}], "frame": [null, 0]}
+  ],
+  "layer": [
+    {
+      "mark": {"type": "area", "interpolate": "step-after", "opacity": 0.6},
+      "encoding": {
+        "x": {
+          "field": "bin_end",
+          "type": "quantitative",
+          "title": "SST Anomaly (°C: negative = abnormally cold, positive = abnormally warm)",
+          "scale": {"domainMin": -3, "domainMax": 6}  
+        },
+        "y": {
+          "field": "cum_n",
+          "type": "quantitative",
+          "title": "Count of Bleaching Events",
+          "scale": {"domainMin": 0, "domainMax": 2500}  
+        },
+        "color": {"value": "#3f8efc"}
+      }
+    },
+    {
+      "mark": {"type": "rule", "strokeDash": [4, 3], "opacity": 0.6},
+      "encoding": {"x": {"value": 0}}
+    },
+
+
+    {
+      "mark": {
+        "type": "text",
+        "x": 100,
+        "y": 50,
+        "fontSize": 13,
+        "fontStyle": "italic",
+        "text": "Cooler temperatures"
+      }
+    },
+    {
+      "mark": {
+        "type": "text",
+        "x": 100,
+        "y": 60,
+        "fontSize": 13,
+        "fontStyle": "italic",
+        "text": "can also cause"
+      }
+    },
+        {
+      "mark": {
+        "type": "text",
+        "x": 100,
+        "y": 70,
+        "fontSize": 13,
+        "fontStyle": "italic",
+        "text": "stress and bleaching"
+      }
+    
+    
+    
+    },
+
+            {
+      "mark": {
+        "type": "text",
+        "x": 200,
+        "y": 150,
+        "fontSize": 13,
+        "fontStyle": "italic",
+        "text": "Near no anomally,"
+      }
+    },
+    {
+      "mark": {
+        "type": "text",
+        "x": 200,
+        "y": 160,
+        "fontSize": 13,
+        "fontStyle": "italic",
+        "text": "less bleaching"
+      }
+    },
+        {
+      "mark": {
+        "type": "text",
+        "x": 200,
+        "y": 170,
+        "fontSize": 13,
+        "fontStyle": "italic",
+        "text": "occurs"
+      }
+    },
+
+
+        {
+      "mark": {
+        "type": "text",
+        "x": 350,
+        "y": 50,
+        "fontSize": 13,
+        "fontStyle": "italic",
+        "text": "Abnormally warm"
+      }
+    },
+    {
+      "mark": {
+        "type": "text",
+        "x": 350,
+        "y": 60,
+        "fontSize": 13,
+        "fontStyle": "italic",
+        "text": "temperature, high"
+      }
+    },
+        {
+      "mark": {
+        "type": "text",
+        "x": 350,
+        "y": 70,
+        "fontSize": 13,
+        "fontStyle": "italic",
+        "text": "levels of bleaching"
+      }
+    }
+
+
+
+  ],
+
+
+
+
+
+  "width": 450,
+  "height": 320
+}

@@ -1,0 +1,117 @@
+{
+  "$schema": "https://vega.github.io/schema/vega-lite/v6.json",
+  "title": "Distribution of Cyclone Frequency by Bleaching Severity and Exposure",
+  "width": 720,
+  "height": 90,
+  "data": { "url": "global_bleaching_environmental.csv" },
+
+  "transform": [
+    { "calculate": "toNumber(datum.Cyclone_Frequency)", "as": "cyclone" },
+    { "calculate": "toNumber(datum.Percent_Bleaching)", "as": "bleach" },
+    {
+      "calculate": "datum.bleach < 1 ? 'No bleaching (<1%)' : datum.bleach <= 20 ? 'Low (1–20%)' : datum.bleach <= 80 ? 'Moderate–High (20–80%)' : 'Extreme (>80%)'",
+      "as": "Bleaching_Category"
+    },
+    { "filter": "isFinite(datum.cyclone) && isFinite(datum.bleach)" }
+  ],
+
+  "facet": {
+    "row": {
+      "field": "Bleaching_Category",
+      "title": "Bleaching severity",
+      "sort": [
+        "No bleaching (<1%)",
+        "Low (1–20%)",
+        "Moderate–High (20–80%)",
+        "Extreme (>80%)"
+      ]
+    }
+  },
+
+  "spec": {
+    "layer": [
+      {
+        "transform": [
+          {
+            "density": "cyclone",
+            "groupby": ["Exposure", "Bleaching_Category"],
+            "extent": [0, 110],
+            "steps": 100
+          }
+        ],
+        "mark": { "type": "area", "opacity": 0.8 },
+        "encoding": {
+          "x": {
+            "field": "value",
+            "type": "quantitative",
+            "title": "Cyclone frequency"
+          },
+          "y": {
+            "field": "density",
+            "type": "quantitative",
+            "stack": "zero",
+            "title": null
+          },
+          "color": {
+            "field": "Exposure",
+            "type": "nominal",
+            "title": "Exposure",
+            "sort": ["Exposed", "Sheltered", "Sometimes"]
+          }
+        }
+      },
+      {
+        "data": {
+          "values": [
+            {
+              "Bleaching_Category": "No bleaching (<1%)",
+              "x": 70,
+              "y": 0.25,
+              "text": "Most sites show mild exposure — cyclones not strongly linked to bleaching."
+            },
+            {
+              "Bleaching_Category": "Low (1–20%)",
+              "x": 70,
+              "y": 0.25,
+              "text": "Low bleaching still occurs around moderate cyclone frequencies (~50)."
+            },
+            {
+              "Bleaching_Category": "Moderate–High (20–80%)",
+              "x": 70,
+              "y": 0.25,
+              "text": "Peak bleaching aligns with frequent cyclones — potential stress overlap."
+            },
+            {
+              "Bleaching_Category": "Extreme (>80%)",
+              "x": 70,
+              "y": 0.25,
+              "text": "Extreme bleaching more dispersed — fewer cyclones or isolated conditions."
+            }
+          ]
+        },
+        "mark": {
+          "type": "text",
+          "align": "left",
+          "baseline": "middle",
+          "dx": 0,
+          "fontSize": 11,
+          "fontWeight": "bold",
+          "color": "black"
+        },
+        "encoding": {
+          "x": { "field": "x", "type": "quantitative" },
+          "y": { "field": "y", "type": "quantitative" },
+          "text": { "field": "text" },
+          "facet": { "field": "Bleaching_Category" }
+        }
+      }
+    ]
+  },
+
+  "config": {
+    "view": { "stroke": null },
+    "facet": { "spacing": 10 },
+    "axis": { "labelFontSize": 11, "titleFontSize": 12 },
+    "legend": { "titleFontSize": 12, "labelFontSize": 11 }
+  }
+}

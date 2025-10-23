@@ -1,0 +1,127 @@
+{
+  "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+  "description": "2019 coral bleaching: Oceans stacked by top-5 realms; click to see realm averages.",
+  "data": {"url": "global_bleaching_environmental.csv"},
+  "params": [
+    { "name": "sel_ocean", "select": {"type": "point", "fields": ["Ocean_Name"]} }
+  ],
+  "transform": [
+    {"filter": "datum.Date_Year == 2019"},
+
+
+
+    {
+      "aggregate": [
+        {"op": "distinct", "field": "Reef_ID", "as": "sites"},
+        {"op": "mean", "field": "Percent_Bleaching", "as": "avg_bleach"}
+      ],
+      "groupby": ["Ocean_Name", "Realm_Name"]
+    },
+
+
+
+    {
+      "window": [{"op": "row_number", "as": "rank_realm"}],
+      "sort": [{"field": "sites", "order": "descending"}],
+      "groupby": ["Ocean_Name"]
+    },
+
+
+
+    {
+      "calculate": "datum.rank_realm <= 5 ? datum.Realm_Name : 'Other'",
+      "as": "Realm_Top5"
+    },
+
+
+
+
+    { "calculate": "datum.avg_bleach * datum.sites", "as": "bleach_weight" }
+  ],
+  "vconcat": [
+
+    {
+      "title": "Bleaching by Ocean (2019) — legend shows Top-5 realms per ocean",
+      "width": "container",
+      "height": 260,
+      "mark": {"type": "bar"},
+      "encoding": {
+        "x": {"field": "Ocean_Name", "type": "nominal", "title": "Ocean", "sort": "-y"},
+        "y": {
+          "aggregate": "sum",
+          "field": "sites",
+          "type": "quantitative",
+          "title": "Number of Sites"
+        },
+        "color": {
+          "field": "Realm_Top5",
+          "type": "nominal",
+          "title": "Realm (Top-5 per Ocean; others grouped)",
+          "sort": ["Other"],
+          "legend": {"orient": "right"}
+        },
+        "tooltip": [
+          {"field": "Ocean_Name", "title": "Ocean"},
+          {"field": "Realm_Top5", "title": "Realm group"},
+          {"aggregate": "sum", "field": "sites", "title": "Sites"},
+          {"aggregate": "mean", "field": "avg_bleach", "title": "Avg % Bleach", "format": ".1f"}
+        ]
+      },
+      "params": [
+        { "name": "sel_ocean", "select": {"type": "point", "fields": ["Ocean_Name"]} }
+      ]
+    },
+
+
+
+    {
+      "title": "Top Realms in Selected Ocean — weighted average % bleaching (2019)",
+      "width": "container",
+      "height": 280,
+      "transform": [
+
+
+
+        { "filter": {"param": "sel_ocean", "empty": false} },
+
+
+
+
+        {
+          "aggregate": [
+            {"op": "sum", "field": "sites", "as": "sites_sum"},
+            {"op": "sum", "field": "bleach_weight", "as": "bleach_weight_sum"}
+          ],
+          "groupby": ["Realm_Top5"]
+        },
+        { "calculate": "datum.bleach_weight_sum / datum.sites_sum", "as": "weighted_avg_bleach" },
+
+        {
+          "window": [{"op": "row_number", "as": "r"}],
+          "sort": [{"field": "sites_sum", "order": "descending"}]
+        }
+      ],
+      "mark": {"type": "bar"},
+      "encoding": {
+        "y": {
+          "field": "Realm_Top5",
+          "type": "nominal",
+          "title": "Realm",
+          "sort": {"field": "sites_sum", "order": "descending"}
+        },
+        "x": {
+          "field": "weighted_avg_bleach",
+          "type": "quantitative",
+          "title": "Weighted Avg % Bleaching"
+        },
+        "color": {"field": "Realm_Top5", "type": "nominal", "legend": null},
+        "tooltip": [
+          {"field": "Realm_Top5", "title": "Realm group"},
+          {"field": "weighted_avg_bleach", "title": "Weighted Avg % Bleaching", "format": ".1f"},
+          {"field": "sites_sum", "title": "Sites contributing"}
+        ]
+      }
+    }
+  ],
+  "resolve": {"scale": {"color": "independent"}}
+}

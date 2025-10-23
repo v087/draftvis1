@@ -1,0 +1,98 @@
+{
+  "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+  "description": "2019 coral bleaching: radial two-level (Oceans inner ring, Realms outer ring). Top-5 realms per ocean; others grouped.",
+  "data": {"url": "global_bleaching_environmental.csv"},
+  "params": [
+    { "name": "sel_ocean", "select": {"type": "point", "fields": ["Ocean_Name"]} }
+  ],
+  "transform": [
+    {"filter": "datum.Date_Year == 2019"},
+
+    {
+      "aggregate": [
+        {"op": "distinct", "field": "Reef_ID", "as": "sites"}
+      ],
+      "groupby": ["Ocean_Name", "Realm_Name"]
+    },
+
+    {
+      "window": [{"op": "row_number", "as": "rank_realm"}],
+      "sort": [{"field": "sites", "order": "descending"}],
+      "groupby": ["Ocean_Name"]
+    },
+
+    { "calculate": "datum.rank_realm <= 5 ? datum.Realm_Name : 'Other'", "as": "Realm_Top5" }
+  ],
+  "width": 520,
+  "height": 520,
+  "view": {"stroke": null},
+  "layer": [
+    {
+      "transform": [
+        { "aggregate": [{"op": "sum", "field": "sites", "as": "sites_ocean"}], "groupby": ["Ocean_Name"] }
+      ],
+      "mark": {
+        "type": "arc",
+        "innerRadius": 60,
+        "outerRadius": 150,
+        "cornerRadius": 2,
+        "stroke": "white",
+        "strokeWidth": 1
+      },
+      "encoding": {
+        "theta": {"field": "sites_ocean", "type": "quantitative", "stack": true, "title": "Sites"},
+        "color": {"field": "Ocean_Name", "type": "nominal", "title": "Ocean"},
+        "opacity": {
+          "condition": {"param": "sel_ocean", "value": 1},
+          "value": 0.35
+        },
+        "tooltip": [
+          {"field": "Ocean_Name", "title": "Ocean"},
+          {"field": "sites_ocean", "title": "Sites"}
+        ]
+      },
+      "params": [
+        { "name": "sel_ocean", "select": {"type": "point", "fields": ["Ocean_Name"]} }
+      ]
+    },
+
+    {
+      "transform": [
+        { "filter": {"param": "sel_ocean", "empty": true} },
+        { "aggregate": [{"op": "sum", "field": "sites", "as": "sites_realm"}],
+          "groupby": ["Ocean_Name", "Realm_Top5"] }
+      ],
+      "mark": {
+        "type": "arc",
+        "innerRadius": 158,
+        "outerRadius": 240,
+        "cornerRadius": 2,
+        "stroke": "white",
+        "strokeWidth": 1
+      },
+      "encoding": {
+        "theta": {"field": "sites_realm", "type": "quantitative", "stack": true, "title": "Sites"},
+        "color": {
+          "field": "Realm_Top5",
+          "type": "nominal",
+          "title": "Realm (Top-5 per ocean; others grouped)"
+        },
+        "opacity": {
+          "condition": {
+            "test": "isDefined(sel_ocean.Ocean_Name) ? datum.Ocean_Name === sel_ocean.Ocean_Name : true",
+            "value": 1
+          },
+          "value": 0.8
+        },
+        "tooltip": [
+          {"field": "Ocean_Name", "title": "Ocean"},
+          {"field": "Realm_Top5", "title": "Realm group"},
+          {"field": "sites_realm", "title": "Sites"}
+        ]
+      }
+    }
+  ],
+  "encoding": {
+    "x": {"aggregate": null}
+  }
+}
