@@ -1,0 +1,115 @@
+{
+  "$schema": "https://vega.github.io/schema/vega-lite/v6.json",
+  "title": "Mean % Bleaching across environmental drivers (grouped by Exposure)",
+  "data": { "url": "global_bleaching_environmental.csv" },
+
+  "transform": [
+    { "calculate": "toNumber(datum.Percent_Bleaching)", "as": "bleach" },
+    { "calculate": "toNumber(datum.Turbidity)", "as": "turbidity" },
+    { "calculate": "toNumber(datum.Distance_to_Shore)", "as": "distance_km" },
+    { "calculate": "toNumber(datum.Depth_m)", "as": "depth_m" },
+    { "calculate": "toNumber(datum.SSTA_Mean)", "as": "ssta_mean" },
+    { "filter": "isFinite(datum.bleach)" }
+  ],
+
+  "hconcat": [
+    {
+      "width": 260, "height": 220,
+      "mark": { "type": "bar" },
+      "encoding": {
+        "x": {
+          "bin": { "maxbins": 12 },
+          "field": "turbidity",
+          "type": "quantitative",
+          "title": "Turbidity"
+        },
+        "xOffset": { "field": "Exposure" },
+        "y": {
+          "aggregate": "mean",
+          "field": "bleach",
+          "type": "quantitative",
+          "title": "Mean % Bleaching",
+          "scale": { "domain": [0, 100] }
+        },
+        "color": { "field": "Exposure", "type": "nominal", "title": "Exposure" },
+        "tooltip": [
+          { "aggregate": "mean", "field": "bleach", "title": "Mean %", "format": ".1f" },
+          { "field": "Exposure", "title": "Exposure" }
+        ]
+      }
+    },
+
+    {
+      "width": 260, "height": 220,
+      "mark": { "type": "bar" },
+      "encoding": {
+        "x": {
+          "bin": { "maxbins": 12 },
+          "field": "distance_km",
+          "type": "quantitative",
+          "title": "Distance to Shore (km)"
+        },
+        "xOffset": { "field": "Exposure" },
+        "y": {
+          "aggregate": "mean",
+          "field": "bleach",
+          "type": "quantitative",
+          "title": "Mean % Bleaching",
+          "scale": { "domain": [0, 100] }
+        },
+        "color": { "field": "Exposure", "type": "nominal", "legend": null }
+      }
+    },
+
+    {
+      "width": 260, "height": 220,
+      "mark": { "type": "bar" },
+      "encoding": {
+        "x": {
+          "bin": { "maxbins": 12 },
+          "field": "depth_m",
+          "type": "quantitative",
+          "title": "Depth (m)"
+        },
+        "xOffset": { "field": "Exposure" },
+        "y": {
+          "aggregate": "mean",
+          "field": "bleach",
+          "type": "quantitative",
+          "title": "Mean % Bleaching",
+          "scale": { "domain": [0, 100] }
+        },
+        "color": { "field": "Exposure", "type": "nominal", "legend": null }
+      }
+    },
+
+    {
+      "width": 260, "height": 220,
+      "mark": { "type": "bar" },
+      "encoding": {
+        "x": {
+          "bin": { "maxbins": 12 },
+          "field": "ssta_mean",
+          "type": "quantitative",
+          "title": "SSTA Mean (°C anomaly)"
+        },
+        "xOffset": { "field": "Exposure" },
+        "y": {
+          "aggregate": "mean",
+          "field": "bleach",
+          "type": "quantitative",
+          "title": "Mean % Bleaching",
+          "scale": { "domain": [0, 100] }
+        },
+        "color": { "field": "Exposure", "type": "nominal", "legend": { "orient": "bottom" } }
+      }
+    }
+  ],
+
+  "resolve": { "scale": { "y": "shared" } },
+
+  "config": {
+    "view": { "stroke": null },
+    "axis": { "labelFontSize": 11, "titleFontSize": 12 }
+  }
+}

@@ -1,0 +1,60 @@
+{
+  "$schema": "https://vega.github.io/schema/vega-lite/v6.json",
+  "description": "Heatmap of annual temperature change vs 1951–1980 baseline by region",
+  "data": { "url": "wraggled_avtemp.csv" },
+
+  "transform": [
+    {
+      "fold": [
+        "world_mean",
+        "oceania_mean",
+        "africa_mean",
+        "asia_mean",
+        "europe_mean",
+        "america_mean"
+      ],
+      "as": ["key", "value"]
+    },
+    {
+      "calculate": "datum.key === 'world_mean' ? 'World' : datum.key === 'oceania_mean' ? 'Oceania' : datum.key === 'africa_mean' ? 'Africa' : datum.key === 'asia_mean' ? 'Asia' : datum.key === 'europe_mean' ? 'Europe' : 'America'",
+      "as": "Region"
+    }
+  ],
+
+  "mark": { "type": "rect" },
+
+  "encoding": {
+    "x": {
+      "field": "year",
+      "type": "ordinal",
+      "title": "Year",
+      "axis": { "labelAngle": 0 }
+    },
+    "y": {
+      "field": "Region",
+      "type": "nominal",
+      "sort": ["World", "Oceania", "Africa", "Asia", "Europe", "America"],
+      "title": null
+    },
+    "color": {
+      "field": "value",
+      "type": "quantitative",
+      "title": "Δ Temp (°C)",
+      "scale": { "domain": [0, 3.5], "range": ["#fff7bc", "#fd8d3c", "#f03b9e", "#4b0082"]  }
+    },
+    "tooltip": [
+      { "field": "Region", "type": "nominal" },
+      { "field": "year", "type": "nominal", "title": "Year" },
+      { "field": "value", "type": "quantitative", "title": "Change (°C)", "format": ".2f" }
+    ]
+  },
+
+  "width": 420,
+  "height": 200,
+  "title": "Warming Over Time Across Regions (1951–1980 Baseline)",
+
+    "config": {
+    "title": { "font": "Markazi Text", "fontSize": 18 },
+    "concat": { "spacing": 12 }
+  }
+}

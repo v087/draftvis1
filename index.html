@@ -12,36 +12,107 @@
   <!-- Pure.css grid -->
   <link rel="stylesheet" href="https://unpkg.com/purecss@2.0.6/build/pure-min.css" />
 
-  <!-- Fonts (optional) -->
+  <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Darumadrop+One&family=Markazi+Text:wght@400;500&display=swap" rel="stylesheet">
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <style>
-    :root { --pad: 14px; }
-    body { font-family: "Open Sans", system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; margin: 0; color:#222; }
-    .page { max-width: 1200px; margin: 0 auto; padding: 18px; }
-    h1 { margin: 0 0 6px; font-size: 28px; }
-    h2 { margin: 0 0 8px; font-size: 20px; }
-    p  { line-height: 1.45; }
+    :root {
+      --pad: 14px;
+      --cream: #fff7e6;
+      --cream-alpha: rgba(255,247,230,0.94);
+      --card-bg: #ffffff;
+      --card-border: rgba(0,0,0,0.06);
+      --text: #222;
+      --muted: #666;
+      --radius: 14px;
+      --shadow-sm: 0 1px 2px rgba(0,0,0,0.06);
+      --shadow-lg: 0 12px 28px rgba(0,0,0,0.14);
+    }
+
+    html, body { height: 100%; }
+
+    body {
+      font-family: "Markazi Text", serif;
+      margin: 0;
+      color: var(--text);
+      background: url('background.jpg') center / cover fixed no-repeat #000;
+      position: relative;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      background: radial-gradient(ellipse at center, rgba(255,255,255,0.12), rgba(0,0,0,0.22));
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .page {
+      position: relative;
+      z-index: 1;
+      width: 900px;
+      margin: 40px auto;
+      padding: 24px;
+      background: var(--cream-alpha);
+      border: 1px solid rgba(0,0,0,0.06);
+      border-radius: 18px;
+      box-shadow: var(--shadow-lg);
+      backdrop-filter: blur(2px);
+    }
+
+    h1, h2, h3 {
+      font-family: "Darumadrop One", cursive;
+      color: #111;
+      text-align: center;
+      letter-spacing: 0.4px;
+    }
+    h1 { margin: 0 0 10px; font-size: 50px; }
+    h2 { margin: 0 0 10px; font-size: 22px; }
+    h3 { margin: 0 0 8px; font-size: 19px; }
+
+    p { line-height: 1.55; text-align: justify; }
 
     .vis-card, .text-card {
-      background: #fff; border: 1px solid #e8ecef; border-radius: 10px;
-      box-shadow: 0 1px 2px rgba(0,0,0,0.04);
-      padding: var(--pad); margin-bottom: 16px;
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow-sm);
+      padding: var(--pad);
+      margin-bottom: 16px;
     }
+
+    .subhead {
+      width: 100%;
+      display: block;
+      background: #f5f5f5;
+      border-top: 2px solid #333;
+      border-bottom: 2px solid #333;
+      padding: 8px 12px;
+      font-family: "Darumadrop One", cursive;
+      font-size: 24px;
+      text-align: center;
+      margin: 20px 0;
+    }
+
+    .media-card { padding: 10px; }
+    .media-img {
+      width: 100%;
+      height: auto;
+      display: block;
+      border-radius: 12px;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.06);
+    }
+
+    .tight-list { margin: 0.25rem 0 0; padding-left: 1.1rem; }
     .vis-container { width: 100%; min-height: 420px; }
-    .small { font-size: 12px; color:#666; }
+    .small { font-size: 13px; color: var(--muted); }
 
-    /* tighten gutters a touch on desktop */
-    .pure-g > [class*="pure-u"] { padding: 6px; }
-    @media (max-width: 768px) {
-      .vis-container { min-height: 340px; }
-    }
-
-    /* sticky caption area beside matrix (optional) */
+    .pure-g > [class*="pure-u"] { padding: 6px; box-sizing: border-box; }
     .sticky { position: sticky; top: 10px; }
   </style>
 </head>
@@ -52,86 +123,226 @@
     <div class="pure-g">
       <div class="pure-u-1">
         <h1>Global Coral Bleaching</h1>
-        <p class="small">Exploring how temperature and local conditions relate to bleaching outcomes.</p>
+        <h3> Exploring how temperature and local conditions relate to bleaching outcomes </h3>
       </div>
     </div>
 
-    <!-- SECTION 1: Overview visual (map + timeline + area) -->
+    <!-- INTRO SECTION -->
+    <div class="pure-g">
+      <div class="pure-u-1">
+        <h2 class="subhead">How does coral bleaching happen?</h2>
+      </div>
+    </div>
+
+    <!-- Image + Text side-by-side -->
+    <div class="pure-g">
+      <div class="pure-u-1-2">
+        <div class="vis-card media-card">
+          <img
+            src="coral_bleaching_outline_diagram-1.jpg"
+            alt="Diagram showing how heat stress drives coral bleaching via expelled symbiotic algae"
+            class="media-img"
+          />
+          <p class="small" style="text-align:center;">Image from www.shutterstock.com</p>
+        </div>
+      </div>
+
+      <div class="pure-u-1-2">
+        <div class="text-card">
+          <h3>The Mechanism</h3>
+          <p>
+            Corals live with symbiotic algae that provide most of their energy.
+            When sea temperatures rise or conditions become stressful, corals expel these algae.
+            Without the algae’s pigments, corals appear white (“bleached”).
+          </p>
+
+          <h3>Bleaching severity</h3>
+          <p>The percentage shows how much of a coral colony has bleached:</p>
+          <ul class="tight-list">
+            <li><strong>&lt;1%</strong> — virtually no bleaching; reef condition is normal.</li>
+            <li><strong>1–10%</strong> — low-level stress; most colonies recover when temperatures drop.</li>
+            <li><strong>10–50%</strong> — moderate bleaching; recovery depends on how long heat stress lasts.</li>
+            <li><strong>80%+</strong> — severe; colonies are unlikely to recover and many die.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 1 -->
+    <div class="pure-g">
+      <div class="pure-u-1">
+        <h2 class="subhead">The effect of ocean temperature anomalies on coral bleaching</h2>
+      </div>
+    </div>
+
+    <h2>Coral bleaching at monitored reef sites (2005–2020) </h2>
+
     <div class="pure-g">
       <div class="pure-u-1">
         <div class="vis-card">
-          <h2>Section 1 — Overview</h2>
           <div id="vis-overview" class="vis-container"></div>
         </div>
       </div>
     </div>
 
-    <!-- SECTION 1 annotations: two text columns -->
     <div class="pure-g">
       <div class="pure-u-1-2">
         <div class="text-card">
-          <h2>Key Takeaways</h2>
-          <p>
-            • Bleaching events cluster in years ....<br/>
-            • talking about cetrain regions<br/>
-            • talk about increase in research in some years
-          </p>
+          <h2>Key Dates and Events</h2>
+          <ul>
+            <li><strong>Mid-2000s:</strong> Reef monitoring expands with rising awareness.</li>
+            <li><strong>2008–2009:</strong> Global Financial Crisis slows research and campaigns.</li>
+            <li><strong>2010s:</strong> Repeated marine heatwaves drive major bleaching.</li>
+            <li><strong>2020:</strong> COVID-19 limits fieldwork despite continued warming.</li>
+          </ul>
+          <p>Use the bottom timeline to explore changes across years and regions.</p>
         </div>
       </div>
+
       <div class="pure-u-1-2">
         <div class="text-card">
-          <h2>About coral bleaching</h2>
-          <p>
-            • talk about the bleaching percentages<br/>
-            • 0-1% bleaching is fairly normal etc etc <br/>
-            • risk about bleaching itself
-          </p>
+          <h2>Coral Reef Regions</h2>
+          <p>Each region can have its own local factors driving coral bleaching.</p>
+          <ul>
+            <li><strong>Indo-Pacific:</strong> Largest area; frequent severe bleaching events.</li>
+            <li><strong>Caribbean:</strong> Episodic events often worsened by disease.</li>
+            <li><strong>Indian Ocean:</strong> Wide-scale events like 2016 heatwave.</li>
+            <li><strong>Red Sea:</strong> Some resilience but still vulnerable to extremes.</li>
+          </ul>
         </div>
       </div>
     </div>
 
-    <!-- SECTION 3: Matrix on the right, description on the left -->
-    <div class="pure-g">
-      <!-- Left column: description -->
-      <div class="pure-u-1 pure-u-md-1-3">
-        <div class="text-card sticky">
-          <h2>Section 3 — Relationships</h2>
-          <p>
-            This matrix explores how <em>Percent Bleaching</em> varies with <em>Depth</em> and
-            <em>Turbidity</em>. Please use brush to highlight subsets
-          </p>
-          <p class="small">
-            more descriptions - talk about no more clear trends so temperature is the leading factor
-          </p>
-        </div>
-      </div>
-
-      <!-- Right column: matrix visual -->
-      <div class="pure-u-1 pure-u-md-2-3">
-        <div class="vis-card">
-          <div id="vis-matrix" class="vis-container"></div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Footer -->
     <div class="pure-g">
       <div class="pure-u-1">
-        <p class="small">
-          Source: van Woesik et&nbsp;al. (BCO-DMO dataset 773466). Built with Vega-Lite & Pure.css.
-        </p>
+        <h2 class="subhead">The effect of temperature on Coral Bleaching</h2>
+      </div>
+    </div>
+
+    <h2>Sea Surface Temperature (SST) Anomaly - The lead cause of Coral Bleaching </h2>
+
+    <div class="pure-g">
+      <div class="pure-u-2-3">
+        <div class="vis-card">
+          <div id="vis2" class="vis-container"></div>
+        </div>
+      </div>
+
+      <div class="pure-u-1-3">
+        <div class="text-card sticky">
+          <h3 style="margin-top:0;">Using the graph</h3>
+          <p>Select your bleaching threshold (default 50%) to filter high-severity events.</p>
+          <h3>Analysis</h3>
+          <p>Most bleaching occurs under abnormally warm conditions, showing a clear heat-stress link.</p>
+          <h3>What this means</h3>
+          <p>Prolonged heatwaves increase bleaching frequency and intensity, making recovery harder. It is incresingly important to combat rising sea temperature.</p>
+        </div>
+      </div>
+    </div>
+
+    <h2>Effect of Global Warming on Sea Surface Temperature (SST) Anomaly</h2>
+    <div class="pure-g">
+      <div class="pure-u-2-3">
+        <div id="vis4" class="vis-card"></div>
+      </div>
+      <div class="pure-u-1-3">
+        <div class="text-card">
+          <h3>Global Warming as an Underlying Cause</h3>
+          <p><b>Hover over graph to see details.</b></p>
+          <p>Rising global temperatures lead to ocean heat anomalies that disrupt marine ecosystems. It is the ultimate underlying factor that is causing widespread coral bleaching.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="pure-g">
+      <div class="pure-u-1">
+        <h2 class="subhead">Beyond Temperature: Other Factors Affecting Coral Bleaching</h2>
+      </div>
+    </div>
+
+    <h2>How Depth, Turbidity, Exposure relate to Coral Bleaching</h2>
+    <div class="pure-g">
+      <div class="pure-u-2-3">
+        <div class="vis-card">
+          <div id="vis-matrix" class="vis-container" aria-label="Scatterplot matrix of non-temperature factors"></div>
+        </div>
+      </div>
+
+      <div class="pure-u-1-3">
+        <div class="text-card sticky">
+          <h3>Using the matrix</h3>
+          <p><b>Drag</b> to pan, <b>scroll</b> to zoom to explore local factors.</p>
+          <h3>What we see</h3>
+          <p>Depth and turbidity show only weak relationships with coral bleaching intensity. However, exposure — how much wave energy and light a site receives — can affect stress levels to some extent. Reefs in shallow, high-light areas tend to bleach more quickly, while deeper or more sheltered sites sometimes fare better.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Conclusion Section -->
+    <div class="pure-g">
+      <div class="pure-u-1">
+        <h2 class="subhead">Conclusion</h2>
+      </div>
+    </div>
+
+    <div class="pure-g">
+      <div class="pure-u-1-2">
+        <div class="vis-card media-card">
+          <img
+            src="reef_betterincolour.jpg"
+            alt="Healthy coral reef with vibrant colours and diverse marine life"
+            class="media-img"
+          />
+          <p class="small" style="text-align:center;">Image from https://icriforum.org/bleaching-awareness-campaign/</p>
+        </div>
+      </div>
+
+      <div class="pure-u-1-2">
+        <div class="text-card">
+          <h3>Final Thoughts</h3>
+          <p>
+            Coral bleaching reveals how fragile ocean ecosystems have become under rising global temperatures.
+            While mild bleaching can reverse, frequent and severe events leave little time for recovery.
+            Protecting coral reefs means tackling climate change, reducing local pressures, and restoring damaged habitats.
+          </p>
+          <p>
+            Coral reefs sustain biodiversity, fisheries, and coastal protection for millions.
+            Preserving them is vital for both marine life and human communities.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Author and References -->
+    <div class="pure-g" style="margin-top:20px;">
+      <div class="pure-u-1">
+        <div class="text-card">
+          <p><strong>Author:</strong> Vishwa Patel</p>
+          <p><strong>Date of dashboard creation:</strong> 23/10/2025</p>
+
+          <p><strong>Data sources:</strong><br>
+            <a href="https://climatedata.imf.org/pages/climatechange-data" target="_blank">https://climatedata.imf.org/pages/climatechange-data</a><br>
+            <a href="https://www.bco-dmo.org/dataset/773466" target="_blank">https://www.bco-dmo.org/dataset/773466</a>
+          </p>
+
+          <p><strong>References:</strong><br>
+            <a href="https://www.fisheries.noaa.gov/national/habitat-conservation/restoring-coral-reefs" target="_blank">https://www.fisheries.noaa.gov/national/habitat-conservation/restoring-coral-reefs</a><br>
+            <a href="https://www.aims.gov.au/research-topics/environmental-issues/climate-change/australian-coral-reef-resilience-initiative" target="_blank">https://www.aims.gov.au/research-topics/environmental-issues/climate-change/australian-coral-reef-resilience-initiative</a>
+          </p>
+        </div>
       </div>
     </div>
   </div>
 
   <script>
-    // Point these to your spec files
-    const specOverview = "section1_visualisation.vg.json";   // map + timeline + area (your combined overview)
-    const specMatrix   = "section3_visualisation.vg.json";   // your 3×3 matrix (SPLOM or binned matrix)
-
-    // Embed visuals (no action buttons for a cleaner look)
+    const specOverview = "section1_visualisation.vg.json";
+    const specCDF      = "cdf.vg.json";    
+    const specMatrix   = "section3_visualisation.vg.json";
+    const specHeatmap  = "heatmap.vg.json";
     vegaEmbed("#vis-overview", specOverview, {actions: false}).catch(console.error);
+    vegaEmbed("#vis2",         specCDF,      {actions: false}).catch(console.error);
     vegaEmbed("#vis-matrix",   specMatrix,   {actions: false}).catch(console.error);
+    vegaEmbed("#vis4",         specHeatmap,  {actions: false}).catch(console.error);
   </script>
 </body>
 </html>
