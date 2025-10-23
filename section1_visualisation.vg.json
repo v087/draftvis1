@@ -1,7 +1,6 @@
 {
   "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
   "data": { "url": "section1_datasource.csv" },
-  "title": "Coral bleaching at monitored reef sites (1997–2020)",
 
   "transform": [
     {
@@ -9,18 +8,14 @@
       "as": "date"
     },
     { "calculate": "toNumber(datum.Percent_Bleaching)", "as": "pct_bleach" },
-    { "filter": "year(datum.date) >= 1997" }
+    { "filter": "year(datum.date) >= 2005" }
   ],
-
-
-
-
 
   "vconcat": [
     {
       "hconcat": [
         {
-          "width": 600,
+          "width": 450,
           "height": 300,
           "projection": { "type": "equalEarth", "rotate": [-150, 0, 0] },
           "layer": [
@@ -45,13 +40,6 @@
               },
               "mark": { "type": "geoshape", "fill": null, "stroke": "lightgray" }
             },
-
-
-            
-
-
-
-
             {
               "transform": [{ "filter": { "param": "time_brush" } }],
               "encoding": {
@@ -60,20 +48,13 @@
                 "color": {
                   "field": "pct_bleach",
                   "type": "quantitative",
-                  "title": "Percent bleaching",
+                  "title": "% Bleaching",
                   "scale": {
                     "type": "threshold",
-                    "domain": [1, 10, 20, 50, 80],
-                    "range": [
-                      "#f3e79b",  
-                      "#f8a07e",  
-                      "#eb7f86",  
-                      "#ce6693",  
-                      "#a059a0",  
-                      "#5c53a5"   
-                    ]
+                    "domain": [1, 20, 50, 80],
+                    "range": ["#f3e79b", "#f8a07e", "#ce6693", "#a059a0", "#5c53a5"]
                   },
-                  "legend": { "title": "% Bleaching" }
+                  "legend": { "title": "% Bleaching", "orient": "right", "offset": 0 }
                 },
                 "tooltip": [
                   { "field": "date", "type": "temporal", "title": "Date" },
@@ -83,25 +64,20 @@
                 ]
               },
               "layer": [
-                { "mark": { "type": "circle", "opacity": 0.7, "size": 20 } },
-
-
-
-
-
-
-
-
+                { "mark": { "type": "circle", "opacity": 0.7, "size": 18 } },
                 {
                   "transform": [
                     { "window": [{ "op": "row_number", "as": "rn" }], "sort": [{ "field": "pct_bleach", "order": "descending" }] },
                     { "filter": "datum.rn == 1" },
-                    { "calculate": "'Most extreme bleaching in range: ' + format(datum.pct_bleach,'~r') + '%'", "as": "label" }
+                    { "calculate": "'Worst bleaching: ' + format(datum.pct_bleach,'~r') + '%'", "as": "label" }
                   ],
                   "layer": [
                     {
-                      "mark": { "type": "point", "size": 260,
-                        "shape": "M0,.5L.6,.8L.5,.1L1,-.3L.3,-.4L0,-1L-.3,-.4L-1,-.3L-.5,.1L-.6,.8L0,.5Z" },
+                      "mark": {
+                        "type": "point",
+                        "size": 220,
+                        "shape": "M0,.5L.6,.8L.5,.1L1,-.3L.3,-.4L0,-1L-.3,-.4L-1,-.3L-.5,.1L-.6,.8L0,.5Z"
+                      },
                       "encoding": {
                         "longitude": { "field": "Longitude_Degrees", "type": "quantitative" },
                         "latitude": { "field": "Latitude_Degrees", "type": "quantitative" },
@@ -109,8 +85,7 @@
                       }
                     },
                     {
-                      "mark": { "type": "text", "align": "left", "dx": 6, "dy": -6, "fontStyle": "italic",
-                        "stroke": "black", "strokeWidth": 1 },
+                      "mark": { "type": "text", "align": "center", "dx": 5, "dy": -6, "fontStyle": "italic", "stroke": "black", "strokeWidth": 0.8 },
                       "encoding": {
                         "longitude": { "field": "Longitude_Degrees" },
                         "latitude": { "field": "Latitude_Degrees" },
@@ -123,15 +98,9 @@
             }
           ]
         },
-
-
-
-
-
-
         {
-          "width": 475,
-          "height": 280,
+          "width": 200,
+          "height": 250,
           "mark": "area",
           "encoding": {
             "x": {
@@ -147,35 +116,38 @@
               "title": "% Bleaching",
               "scale": {
                 "type": "threshold",
-                "domain": [1, 10, 20, 50, 80],
-                "range": ["#f3e79b", "#f8a07e", "#eb7f86", "#ce6693", "#a059a0", "#5c53a5"]
+                "domain": [1, 20, 50, 80],
+                "range": ["#f3e79b", "#f8a07e", "#ce6693", "#a059a0", "#5c53a5"]
               },
               "legend": null
             }
           }
         }
-      ]
+      ],
+      "spacing": 10
     },
-
-
-
-
-
-
-
-
     {
-      "width": 1200,
-      "height": 60,
+      "width": 710,
+      "height": 100,
       "mark": { "type": "line", "color": "#f8a07e" },
-      "title": "Use this line chart to filter the data by time",
+      "title": "Use this line chart to filter the data by time (may take 3 seconds)",
       "params": [{ "name": "time_brush", "select": { "type": "interval", "encodings": ["x"] } }],
       "encoding": {
         "x": { "field": "date", "timeUnit": "yearmonth", "axis": { "title": "", "format": "%Y" } },
         "y": { "aggregate": "count", "axis": { "tickCount": 3, "grid": false }, "title": "Count of Sites" }
       }
     }
+
+
+
+
+
+
   ],
 
-  "config": { "title": { "font": "sans-serif", "fontSize": 16 } }
+  
+  "config": {
+    "title": { "font": "Markazi Text", "fontSize": 18 },
+    "concat": { "spacing": 12 }
+  }
 }

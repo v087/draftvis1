@@ -1,0 +1,69 @@
+{
+  "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+  "data": { "url": "temp_v_bleach.csv" },
+  "title": "Coral Bleaching (≥20%) vs Sea Surface Temperature",
+
+  "params": [
+    {
+      "name": "minDepth",
+      "value": 0,
+      "bind": { "input": "range", "min": 0, "max": 45, "step": 1, "name": "Minimum depth (m): " }
+    },
+    {
+      "name": "minDist",
+      "value": 0,
+      "bind": { "input": "range", "min": 0, "max": 95000, "step": 500, "name": "Minimum distance to shore (m): " }
+    }
+  ],
+
+  "transform": [
+    {
+      "calculate": "isValid(datum.Percent_Bleaching) ? toNumber(replace(datum.Percent_Bleaching + '', '%', '')) : (isValid(datum.Percentage_Bleaching) ? toNumber(replace(datum.Percentage_Bleaching + '', '%', '')) : null)",
+      "as": "PctBleach"
+    },
+
+    {
+      "calculate": "isValid(datum.Temperature_Kelvin) ? datum.Temperature_Kelvin - 273.15 : (isValid(datum.ClimSST) ? datum.ClimSST - 273.15 : null)",
+      "as": "Temp_C"
+    },
+
+    { "calculate": "round(datum.Temp_C * 10) / 10", "as": "Temp_C_1dp" },
+
+    { "filter": "isValid(datum.PctBleach) && datum.PctBleach >= 20" },
+    { "filter": "isValid(datum.Temp_C_1dp) && datum.Temp_C_1dp >= 17 && datum.Temp_C_1dp <= 40" },
+    { "filter": "isValid(datum.Depth_m) && datum.Depth_m >= minDepth" },
+    { "filter": "isValid(datum.Distance_to_Shore) && datum.Distance_to_Shore >= minDist" }
+  ],
+
+  "mark": { "type": "bar", "opacity": 0.85, "cornerRadiusTopLeft": 2, "cornerRadiusTopRight": 2 },
+
+  "encoding": {
+    "x": {
+      "bin": { "start": 17, "step": 3 },
+      "field": "Temp_C_1dp",
+      "type": "quantitative",
+      "title": "Sea Surface Temperature (°C, 3°C bins from 17°C)",
+      "axis": { "format": ".1f" },
+      "scale": { "domainMin": 17, "domainMax": 40 }
+    },
+    "y": {
+      "aggregate": "count",
+      "type": "quantitative",
+      "title": "Count of sites with ≥20% bleaching",
+      "scale": { "domain": [0, 90] }
+    },
+    "tooltip": [
+      { "field": "Temp_C_1dp", "title": "Temperature (°C)", "format": ".1f" },
+      { "aggregate": "count", "title": "Count (≥20% Bleached)" },
+      { "field": "PctBleach", "title": "Bleaching %", "format": ".1f" },
+      { "field": "Depth_m", "title": "Depth (m)" },
+      { "field": "Distance_to_Shore", "title": "Distance to shore (m)" }
+    ],
+    "color": { "value": "#3b82f6" }
+  },
+
+  "config": {
+    "view": { "stroke": null },
+    "axis": { "labelFont": "Inter, system-ui, sans-serif", "titleFont": "Inter, system-ui, sans-serif", "labelFontSize": 12, "titleFontSize": 13 }
+  }
+}

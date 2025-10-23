@@ -1,0 +1,33 @@
+{
+  "$schema": "https://vega.github.io/schema/vega-lite/v6.json",
+  "title": "Distribution of Turbidity by Exposure",
+  "width": 720,
+  "height": 90,
+  "data": { "url": "global_bleaching_environmental.csv" },
+
+  "transform": [
+    { "calculate": "toNumber(datum.Turbidity)", "as": "turb" },
+    { "filter": "isFinite(datum.turb)" },
+    {
+      "density": "turb",
+      "groupby": ["Exposure"],
+      "extent": [0, 0.5],          
+      "steps": 100
+    }
+  ],
+
+  "mark": { "type": "area", "opacity": 0.8 },
+
+  "encoding": {
+    "x": { "field": "value", "type": "quantitative", "title": "Turbidity" },
+    "y": { "field": "density", "type": "quantitative", "stack": "zero", "title": null },
+    "row": { "field": "Exposure", "title": "Exposure", "sort": ["Exposed","Sheltered","Sometimes"] },
+    "color": { "field": "Exposure", "legend": null }
+  },
+
+  "config": {
+    "view": { "stroke": null },
+    "facet": { "spacing": 10 },
+    "axis": { "labelFontSize": 11, "titleFontSize": 12 }
+  }
+}

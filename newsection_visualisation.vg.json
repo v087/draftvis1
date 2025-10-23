@@ -1,0 +1,47 @@
+{
+  "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+  "description": "Seasonal coral bleaching intensity by year and month.",
+  "data": { "url": "global_bleaching_environmental.csv" },
+
+  "transform": [
+    { "calculate": "toNumber(datum.Percent_Bleaching)", "as": "pct_bleach" },
+    {
+      "aggregate": [
+        { "op": "mean", "field": "pct_bleach", "as": "mean_bleach" }
+      ],
+      "groupby": ["Date_Year", "Date_Month"]
+    }
+  ],
+
+  "mark": "rect",
+
+  "encoding": {
+    "x": {
+      "field": "Date_Year",
+      "type": "ordinal",
+      "title": "Year",
+      "axis": { "labelAngle": 0 }
+    },
+    "y": {
+      "field": "Date_Month",
+      "type": "ordinal",
+      "title": "Month"
+    },
+    "color": {
+      "field": "mean_bleach",
+      "type": "quantitative",
+      "title": "Mean % Bleaching",
+      "scale": { "scheme": "inferno", "domain": [0, 100] }
+    },
+    "tooltip": [
+      { "field": "Date_Year", "title": "Year" },
+      { "field": "Date_Month", "title": "Month" },
+      { "field": "mean_bleach", "title": "Mean % Bleaching", "format": ".1f" }
+    ]
+  },
+
+  "config": {
+    "axis": { "labelFontSize": 11, "titleFontSize": 12 },
+    "view": { "stroke": "transparent" }
+  }
+}
