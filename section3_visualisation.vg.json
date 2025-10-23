@@ -1,9 +1,8 @@
 {
   "$schema": "https://vega.github.io/schema/vega-lite/v6.json",
-  "title": "Section 3 — Coral Bleaching Relationships (2019 only)",
   "repeat": {
-    "row": ["Percent_Bleaching", "Depth_m", "Turbidity"],
-    "column": ["Turbidity", "Depth_m", "Percent_Bleaching"]
+    "row": ["Percent Bleaching", "Depth (m)", "Turbidity (NTU)"],
+    "column": ["Turbidity (NTU)", "Depth (m)", "Percent Bleaching"]
   },
   "spec": {
     "data": { "url": "global_bleaching_environmental.csv" },
@@ -11,8 +10,17 @@
       { "filter": "datum.Date_Year == 2019" },
       {
         "filter": "isValid(datum.Percent_Bleaching) && isValid(datum.Depth_m) && isValid(datum.Turbidity)"
+      },
+      { "calculate": "datum.Percent_Bleaching", "as": "Percent Bleaching" },
+      { "calculate": "datum.Depth_m", "as": "Depth (m)" },
+      { "calculate": "datum.Turbidity", "as": "Turbidity (NTU)" },
+      {
+        "calculate": "isValid(datum.Site_Name) && length(datum.Site_Name) ? datum.Site_Name : 'No cite name give'",
+        "as": "Site (clean)"
       }
     ],
+    "width": 100,
+    "height": 100,
     "mark": { "type": "point", "opacity": 0.5, "size": 22 },
     "params": [
       {
@@ -38,16 +46,16 @@
     ],
     "encoding": {
       "x": {
-        "field": {"repeat": "column"},
+        "field": { "repeat": "column" },
         "type": "quantitative",
-        "scale": {"zero": false},
-        "axis": {"labelOverlap": "greedy"}
+        "scale": { "zero": false },
+        "axis": { "labelOverlap": "greedy" }
       },
       "y": {
-        "field": {"repeat": "row"},
+        "field": { "repeat": "row" },
         "type": "quantitative",
-        "scale": {"zero": false},
-        "axis": {"minExtent": 30}
+        "scale": { "zero": false },
+        "axis": { "minExtent": 30 }
       },
       "color": {
         "condition": {
@@ -59,12 +67,16 @@
         "value": "lightgray"
       },
       "tooltip": [
-        {"field": "Site_Name", "type": "nominal"},
-        {"field": "Country_Name", "type": "nominal"},
-        {"field": "Percent_Bleaching", "type": "quantitative", "format": ".1f"},
-        {"field": "Depth_m", "type": "quantitative", "format": ".1f"},
-        {"field": "Turbidity", "type": "quantitative", "format": ".2f"}
+        { "field": "Site (clean)", "type": "nominal", "title": "Site" },
+        { "field": "Country_Name", "type": "nominal", "title": "Country" },
+        { "field": "Percent Bleaching", "type": "quantitative", "format": ".1f", "title": "Percent Bleaching" },
+        { "field": "Depth (m)", "type": "quantitative", "format": ".1f", "title": "Depth (m)" },
+        { "field": "Turbidity (NTU)", "type": "quantitative", "format": ".2f", "title": "Turbidity (NTU)" }
       ]
     }
+  },
+  "config": {
+    "title": { "font": "Markazi Text", "fontSize": 18 },
+    "concat": { "spacing": 12 }
   }
 }

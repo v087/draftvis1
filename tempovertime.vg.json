@@ -1,0 +1,67 @@
+{
+  "$schema": "https://vega.github.io/schema/vega-lite/v6.json",
+  "description": "Annual temperature change vs 1951–1980 baseline with region selector",
+  "data": { "url": "nasa_avtemp.csv" },
+
+  "params": [
+    {
+      "name": "region",
+      "value": "World",
+      "bind": {
+        "input": "select",
+        "name": "Region: ",
+        "options": ["World", "Oceania", "Africa", "Asia", "Europe", "America"]
+      }
+    }
+  ],
+
+  "transform": [
+    {
+      "fold": [
+        "world_mean",
+        "oceania_mean",
+        "africa_mean",
+        "asia_mean",
+        "europe_mean",
+        "america_mean"
+      ],
+      "as": ["key", "value"]
+    },
+    {
+      "calculate": "datum.key === 'world_mean' ? 'World' : datum.key === 'oceania_mean' ? 'Oceania' : datum.key === 'africa_mean' ? 'Africa' : datum.key === 'asia_mean' ? 'Asia' : datum.key === 'europe_mean' ? 'Europe' : 'America'",
+      "as": "RegionLabel"
+    },
+    { "filter": "datum.RegionLabel == region" }
+  ],
+
+  "mark": { "type": "bar" },
+
+  "encoding": {
+    "x": {
+      "field": "year",
+      "type": "ordinal",
+      "title": "Year",
+      "axis": { "labelAngle": 0 }
+    },
+    "y": {
+      "field": "value",
+      "type": "quantitative",
+      "title": "Change (°C) vs 1951–1980",
+      "scale": { "domain": [0, 2.5] }
+    },
+    "tooltip": [
+      { "field": "RegionLabel", "title": "Region" },
+      { "field": "year", "type": "nominal", "title": "Year" },
+      {
+        "field": "value",
+        "type": "quantitative",
+        "title": "Temp change (°C)",
+        "format": ".2f"
+      }
+    ]
+  },
+
+  "width": 800,
+  "height": 300,
+  "title": "Annual Temperature Change vs 1951–1980 Baseline"
+}
